@@ -50,7 +50,7 @@ const Header = () => {
         rounded
         className="sticky top-0 z-50 bg-white/90 shadow-md backdrop-blur dark:bg-gray-800/90"
       >
-        <NavbarBrand href="https://flowbite-react.com">
+        <NavbarBrand href="https://bizcard-project.onrender.com/">
           <span className="self-center text-xl font-extrabold whitespace-nowrap text-blue-600">
             BizCard
           </span>{" "}
@@ -127,6 +127,11 @@ const Header = () => {
           {user && (
             <NavbarLink>
               <Link to="/profile">Profile</Link>
+            </NavbarLink>
+          )}
+          {user?.isAdmin && (
+            <NavbarLink>
+              <Link to="/admin-dashboard">Admin Dashboard</Link>
             </NavbarLink>
           )}
         </NavbarCollapse>

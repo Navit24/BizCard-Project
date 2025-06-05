@@ -18,41 +18,45 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import type { TUser } from "./types/TUser";
 import CreateCard from "./pages/CreateCard/CreateCard";
+import EditCard from "./pages/EditCard/EditCard";
+import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
+import NotFound from "./pages/NotFound/NotFound";
 
-// import CardDetails from "./components/CardDetails";
-
+// קומפוננטה ראשית שמטפלת בטעינת המשתמש במידה ויש טוקן שמור
 const AppContent = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
+    // פונקציה אסינכרונית לטעינת פרטי המשתמש אם יש טוקן
+    const getUser = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
       try {
+        // פענוח הטוקן לקבלת פרטי משתמש
         const decodedToken = jwtDecode(token) as TUser;
         axios.defaults.headers.common["x-auth-token"] = token;
 
-        // מביא את פרטי המשתמש המעודכנים מהשרת
-        axios
-          .get(
-            `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users/${decodedToken._id}`,
-          )
-          .then((response) => {
-            dispatch(userActions.login(response.data));
-          })
-          .catch((error) => {
-            console.error("Error fetching user data:", error);
-            localStorage.removeItem("token");
-          });
+        // בקשה לשרת לקבלת פרטי המשתמש המלאים לפי מזהה
+        const response = await axios.get(
+          `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users/${decodedToken._id}`,
+        );
+        // עדכון הסטייס של המשתמש ברידקס
+        dispatch(userActions.login(response.data));
       } catch (error) {
-        console.error("Error decoding token:", error);
+        // במקרה של שגיאה - מחיקת הטוקן מהלוקל סטורג והצגת שגיאה בקונסול
+        console.error("Error fetching or decoding user:", error);
         localStorage.removeItem("token");
       }
-    }
+    };
+
+    getUser();
   }, [dispatch]);
 
   return (
     <>
       <Header />
+      {/* מיפוי הנתיבים והגנה על מסלולים פרטיים */}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="home" element={<Home />} />
@@ -97,14 +101,24 @@ const AppContent = () => {
             </RouteGuard>
           }
         />
+        <Route
+          path="/admin-dashboard"
+          element={
+            <RouteGuard isAdmin={true}>
+              <AdminDashboard />
+            </RouteGuard>
+          }
+        />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        {/* <Route path="/card-details/:id" element={<CardDetails/>} /> */}
+        <Route path="/edit-card/:id" element={<EditCard />} />{" "}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );
 };
 
+// קומפוננטת השורש שמריצה את כל האפליקציה
 export default function App() {
   return (
     <BrowserRouter>

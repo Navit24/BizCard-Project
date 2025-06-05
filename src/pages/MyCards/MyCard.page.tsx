@@ -7,6 +7,8 @@ import CardDetails from "../../components/CardDetails";
 import { Card } from "flowbite-react";
 import { FaHeart, FaPhone } from "react-icons/fa";
 import { MdDelete, MdModeEdit } from "react-icons/md";
+import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 const MyCards = () => {
   const [cards, setCards] = useState<TCard[]>([]);
@@ -17,6 +19,9 @@ const MyCards = () => {
     (state: TRootState) => state.searchSlice.searchWord,
   );
   const user = useSelector((state: TRootState) => state.userSlice.user);
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+
   useEffect(() => {
     getMyCards();
   }, []);
@@ -31,6 +36,33 @@ const MyCards = () => {
       setCards(response.data);
     } catch (error) {
       console.error("Error fetching my cards:", error);
+    }
+  };
+  // ---מחיקת כרטיס---
+  const deleteCard = async (cardId: string) => {
+    if (!token) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Are you sure you want to delete the card you created?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+    });
+
+    if (!result.isConfirmed) return;
+    try {
+      await axios.delete(
+        `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${cardId}`,
+        { headers: { "x-auth-token": token } },
+      );
+
+      // הסרת כרטיס מהרשימה המקומית
+      setCards((prev) => prev.filter((card) => card._id !== cardId));
+    } catch (error) {
+      console.error("Error:", error);
     }
   };
   const likeOrUnLikeCard = async (cardId: string) => {
@@ -110,8 +142,20 @@ const MyCards = () => {
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <div className="flex gap-4">
-                    <MdDelete className="cursor-pointer text-2xl text-blue-600 hover:scale-110" />
-                    <MdModeEdit className="cursor-pointer text-2xl text-blue-600 hover:scale-110" />
+                    {user?.isBusiness && (
+                      <MdDelete
+                        onClick={() => deleteCard(card._id)}
+                        className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
+                      />
+                    )}
+                    {user?.isBusiness && (
+                      <MdModeEdit
+                        onClick={() => {
+                          navigate("/edit-card/" + card._id);
+                        }}
+                        className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
+                      />
+                    )}
                   </div>
 
                   <div className="flex gap-4">

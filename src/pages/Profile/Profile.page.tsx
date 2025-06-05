@@ -10,7 +10,7 @@ import {
 } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { RiAdminFill } from "react-icons/ri";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const user = useSelector((state: TRootState) => state.userSlice.user);
