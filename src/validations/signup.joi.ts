@@ -1,52 +1,92 @@
 import Joi from "joi";
 
 export const signupSchema = Joi.object({
-  name: Joi.object()
-    .keys({
-      first: Joi.string().min(2).max(256).required(),
-      middle: Joi.string().min(2).max(256).allow(""),
-      last: Joi.string().min(2).max(256).required(),
-    })
-    .required(),
+  name: Joi.object({
+    first: Joi.string().min(2).max(256).required().messages({
+      "string.empty": "First name is required",
+      "string.min": "First name must be at least 2 characters",
+      "string.max": "First name must be less than 256 characters",
+      "any.required": "First name is required",
+    }),
+
+    middle: Joi.string().min(2).max(256).allow("").messages({
+      "string.min": "Middle name must be at least 2 characters",
+      "string.max": "Middle name must be less than 256 characters",
+    }),
+
+    last: Joi.string().min(2).max(256).required().messages({
+      "string.empty": "Last name is required",
+      "string.min": "Last name must be at least 2 characters",
+      "string.max": "Last name must be less than 256 characters",
+      "any.required": "Last name is required",
+    }),
+  }),
 
   phone: Joi.string()
-    .ruleset.regex(/0[0-9]{1,2}-?\s?[0-9]{3}\s?[0-9]{4}/)
+    .pattern(/0[0-9]{1,2}-?\s?[0-9]{3}\s?[0-9]{4}/)
+    .required()
+    .messages({
+      "string.empty": "Phone number is required",
+      "string.pattern.base": "Phone number is invalid",
+      "any.required": "Phone number is required",
+    }),
 
-    .rule({ message: 'user "phone" mast be a valid phone number' })
-    .required(),
   email: Joi.string()
     .email({ tlds: { allow: false } })
-    .required(),
+    .required()
+    .messages({
+      "string.empty": "Email is required",
+      "string.email": "Email must be a valid email address",
+      "any.required": "Email is required",
+    }),
+
   password: Joi.string()
-    .ruleset.regex(
-      /((?=.*\d{1})(?=.*[A-Z]{1})(?=.*[a-z]{1})(?=.*[!@#$%^&*-]{1}).{7,20})/,
-    )
-    .rule({
-      message:
-        'user "password" must be at least nine characters long and contain an uppercase letter, a lowercase letter, a number and one of the following characters !@#$%^&*-',
-    })
-    .required(),
-  image: Joi.object()
-    .keys({
-      url: Joi.string()
-        .ruleset.regex(
-          /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/,
-        )
-        .rule({ message: "user image mast be a valid url" })
-        .allow(""),
-      alt: Joi.string().min(2).max(256).allow(""),
-    })
-    .required(),
-  address: Joi.object()
-    .keys({
-      state: Joi.string().allow(""),
-      country: Joi.string().required(),
-      city: Joi.string().required(),
-      street: Joi.string().required(),
-      houseNumber: Joi.number().required(),
-      zip: Joi.number(),
-    })
-    .required(),
-  isBusiness: Joi.boolean().required(),
+    .pattern(/(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*-]).{7,20}/)
+    .required()
+    .messages({
+      "string.empty": "Password is required",
+      "string.pattern.base":
+        "Password must be at least 7 characters and include an uppercase letter, lowercase letter, number, and special character",
+      "any.required": "Password is required",
+    }),
+
+  image: Joi.object({
+    url: Joi.string()
+      .pattern(/(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9-]+(\.[^\s]{2,})+)/)
+      .allow("")
+      .messages({
+        "string.pattern.base": "Image URL must be valid",
+      }),
+    alt: Joi.string().min(2).max(256).allow("").messages({
+      "string.min": "Image alt must be at least 2 characters",
+      "string.max": "Image alt must be less than 256 characters",
+    }),
+  }),
+
+  address: Joi.object({
+    state: Joi.string().allow(""),
+
+    country: Joi.string().required().messages({
+      "string.empty": "Country is required",
+      "any.required": "Country is required",
+    }),
+    city: Joi.string().required().messages({
+      "string.empty": "City is required",
+      "any.required": "City is required",
+    }),
+    street: Joi.string().required().messages({
+      "string.empty": "Street is required",
+      "any.required": "Street is required",
+    }),
+    houseNumber: Joi.number().required().messages({
+      "number.base": "House number must be a number",
+      "any.required": "House number is required",
+    }),
+    zip: Joi.number().required().messages({
+      "number.base": "Zip code must be a number",
+      "any.required": "Zip is required",
+    }),
+  }),
+  isBusiness: Joi.boolean(),
   isAdmin: Joi.boolean().allow(""),
 });

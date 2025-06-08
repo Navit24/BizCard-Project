@@ -19,7 +19,7 @@ export type TCard = {
     houseNumber: number;
     zip: number;
   };
-
+  user_id: string;
   bizNumber: number;
   likes: string[];
 };

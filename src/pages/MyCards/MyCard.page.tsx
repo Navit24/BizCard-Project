@@ -142,25 +142,24 @@ const MyCards = () => {
                 </div>
                 <div className="flex items-center justify-between py-2">
                   <div className="flex gap-4">
-                    {user?.isBusiness && (
-                      <MdDelete
-                        onClick={() => deleteCard(card._id)}
-                        className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
-                      />
-                    )}
-                    {user?.isBusiness && (
-                      <MdModeEdit
-                        onClick={() => {
-                          navigate("/edit-card/" + card._id);
-                        }}
-                        className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
-                      />
+                    {user?.isBusiness && user._id === card.user_id && (
+                      <>
+                        <MdDelete
+                          onClick={() => deleteCard(card._id)}
+                          className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
+                        />
+                        <MdModeEdit
+                          onClick={() => navigate("/edit-card/" + card._id)}
+                          className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
+                        />
+                      </>
                     )}
                   </div>
 
                   <div className="flex gap-4">
-                    {" "}
-                    <FaPhone className="cursor-pointer text-xl text-blue-600 hover:scale-110" />
+                    <a href={`tel:${card.phone}`}>
+                      <FaPhone className="cursor-pointer text-xl text-blue-600 hover:scale-110" />
+                    </a>
                     {user && (
                       <FaHeart
                         className={`${isLiked ? "text-red-500" : "text-blue-400"} cursor-pointer text-xl hover:scale-110`}

@@ -6,12 +6,16 @@ import { useSelector } from "react-redux";
 import type { TRootState } from "../../store/store";
 import type { TCard } from "../../types/TCard";
 import CardDetails from "../../components/CardDetails";
+import { MdDelete, MdModeEdit } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const Favorites = () => {
   const [cards, setCards] = useState<TCard[]>([]);
   const [selectedCard, setSelectedCard] = useState<TCard | null>(null);
   const [openModal, setOpenModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const searchWord = useSelector(
     (state: TRootState) => state.searchSlice.searchWord,
@@ -78,11 +82,41 @@ const Favorites = () => {
       );
     });
   };
+
+  // מחיקת כרטיס
+  const deleteCard = async (cardId: string) => {
+    if (!token) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Are you sure you want to delete the card you created?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+    });
+
+    if (!result.isConfirmed) return;
+    try {
+      await axios.delete(
+        `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${cardId}`,
+        { headers: { "x-auth-token": token } },
+      );
+
+      // הסרת כרטיס מהרשימה המקומית
+      setCards((prev) => prev.filter((card) => card._id !== cardId));
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
   return (
     <>
-      <div className="flex flex-wrap items-center justify-center gap-4 bg-gray-50 dark:bg-gray-900">
+      <div className="flex flex-wrap items-center justify-center gap-4 dark:bg-gray-900">
         {loading ? (
           <Spinner aria-label="Default status example" />
+        ) : cards.length === 0 ? (
+          <p className="mt-4 text-center text-gray-500"> No cards found.</p>
         ) : (
           filterBySearch().map((card) => {
             const isLiked = card.likes.includes(user?._id + "");
@@ -127,9 +161,25 @@ const Favorites = () => {
 
                 {/* אייקונים */}
                 <div className="flex items-center justify-between py-2">
-                  <div className="flex gap-4"></div>
                   <div className="flex gap-4">
-                    <FaPhone className="cursor-pointer text-xl text-blue-600 hover:scale-110" />
+                    {user?.isBusiness && user._id === card.user_id && (
+                      <>
+                        <MdDelete
+                          onClick={() => deleteCard(card._id)}
+                          className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
+                        />
+                        <MdModeEdit
+                          onClick={() => navigate("/edit-card/" + card._id)}
+                          className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
+                        />
+                      </>
+                    )}
+                  </div>
+                  <div className="flex gap-4">
+                    <a href={`tel:${card.phone}`}>
+                      <FaPhone className="cursor-pointer text-xl text-blue-600 hover:scale-110" />
+                    </a>
+
                     <FaHeart
                       className={`${isLiked ? "text-red-500" : "text-blue-400"} cursor-pointer text-xl hover:scale-110`}
                       onClick={() => likeOrUnLikeCard(card._id)}

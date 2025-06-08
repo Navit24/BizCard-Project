@@ -82,7 +82,7 @@ const EditCard = () => {
           {" "}
           <div className="w-full max-w-xl text-center">
             <h5 className="mb-4 flex text-2xl font-bold text-gray-900 dark:text-white">
-              Create card
+              Edit card
             </h5>
             <form
               onSubmit={handleSubmit(submitForm)}

@@ -4,7 +4,6 @@ import type { TUser } from "../../types/TUser";
 import axios from "axios";
 import { useForm } from "react-hook-form";
 import type { TRootState } from "../../store/store";
-// import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { userActions } from "../../store/userSlice";
 import { useNavigate } from "react-router-dom";
@@ -21,8 +20,6 @@ const EditProfile = () => {
   const {
     register,
     handleSubmit,
-    // reset,
-    // trigger,
     formState: { errors, isValid },
   } = useForm<TUser>({
     defaultValues: {
@@ -33,7 +30,6 @@ const EditProfile = () => {
       },
       phone: "",
       email: "",
-
       image: {
         url: "",
         alt: "",
@@ -51,6 +47,8 @@ const EditProfile = () => {
     mode: "onChange",
     resolver: joiResolver(editProfileSchema),
   });
+
+  // פונקציית שליחת טופס
   const submitForm = async (data: TUser) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -62,7 +60,7 @@ const EditProfile = () => {
     });
 
     if (!result.isConfirmed) return;
-    console.log("Form Submitted:", data);
+
     try {
       const response = await axios.patch(
         `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users/${userId}`,
@@ -75,7 +73,6 @@ const EditProfile = () => {
       );
       localStorage.setItem("token", response.data.token);
       dispatch(userActions.login(response.data));
-      console.log("Success");
       navigate("/profile");
       Swal.fire("Saved!", "Your profile has been updated.", "success");
     } catch (error) {
@@ -83,33 +80,30 @@ const EditProfile = () => {
       Swal.fire("Error", "Something went wrong while saving.", "error");
     }
   };
-  // useEffect(() => {
-  //   console.log("USER:", user);
-  //   if (user) {
-  //     reset(user);
-  //     trigger();
-  //   }
-  // }, [user, reset, trigger]);
+
   return (
     <>
       <main>
-        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="flex min-h-screen items-center justify-center">
           <div className="w-full max-w-xl text-center">
             <h5 className="mb-4 flex text-2xl font-bold text-gray-900 dark:text-white">
               Edit Your Profile
-            </h5>{" "}
+            </h5>
+
+            {/* טופס עריכת פרופיל */}
             <form
               onSubmit={handleSubmit(submitForm)}
               className="flex flex-col gap-4"
             >
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                {/* שדות שם פרטי, שני, משפחה */}
                 <FloatingLabel
                   {...register("name.first")}
                   type="name"
                   variant="outlined"
                   label="First Name *"
                   color={errors.name?.first && "error"}
-                />{" "}
+                />
                 {errors.name?.first && (
                   <p className="text-sm text-red-500">
                     {errors.name.first.message}
@@ -139,6 +133,7 @@ const EditProfile = () => {
                     {errors.name.last.message}
                   </p>
                 )}
+                {/* שדות אימייל וטלפון */}
                 <FloatingLabel
                   {...register("phone")}
                   type="phone"
@@ -159,6 +154,7 @@ const EditProfile = () => {
                 {errors.email && (
                   <p className="text-sm text-red-500">{errors.email.message}</p>
                 )}
+                {/* שדות תמונה */}
                 <FloatingLabel
                   {...register("image.url")}
                   variant="outlined"
@@ -181,6 +177,7 @@ const EditProfile = () => {
                     {errors.image.alt.message}
                   </p>
                 )}
+                {/* כתובת */}
                 <FloatingLabel
                   {...register("address.state")}
                   variant="outlined"
@@ -243,7 +240,7 @@ const EditProfile = () => {
                   variant="outlined"
                   label="Zip"
                   color={errors.address?.zip && "error"}
-                />{" "}
+                />
                 {errors.address?.zip && (
                   <p className="text-sm text-red-500">
                     {errors.address.zip.message}
@@ -251,6 +248,7 @@ const EditProfile = () => {
                 )}{" "}
               </div>
 
+              {/* כפתורים */}
               <Button type="submit" disabled={!isValid}>
                 Save Changes
               </Button>

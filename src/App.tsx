@@ -78,7 +78,7 @@ const AppContent = () => {
           }
         />
         <Route
-          path="/edit-profile"
+          path="/edit-profile/:id"
           element={
             <RouteGuard>
               <EditProfile />
@@ -111,7 +111,14 @@ const AppContent = () => {
         />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/edit-card/:id" element={<EditCard />} />{" "}
+        <Route
+          path="/edit-card/:id"
+          element={
+            <RouteGuard isBusiness={true}>
+              <EditCard />
+            </RouteGuard>
+          }
+        />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

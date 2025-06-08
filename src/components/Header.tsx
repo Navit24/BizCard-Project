@@ -5,14 +5,12 @@ import {
   Navbar,
   NavbarBrand,
   NavbarCollapse,
-  NavbarLink,
   NavbarToggle,
   TextInput,
 } from "flowbite-react";
 import { FiLogOut } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
-
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { userActions } from "../store/userSlice";
 import type { TRootState } from "../store/store";
 import Swal from "sweetalert2";
@@ -24,6 +22,7 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state: TRootState) => state.userSlice.user);
+  const location = useLocation();
 
   const handleLogout = () => {
     Swal.fire({
@@ -60,6 +59,7 @@ const Header = () => {
           <TextInput
             className="mx-4"
             rightIcon={IoMdSearch}
+            placeholder="Search"
             onChange={(e) =>
               dispatch(searchActions.setSearchWord(e.target.value))
             }
@@ -76,63 +76,82 @@ const Header = () => {
               Hello, {user.name.first}
             </Link>
           )}
-          <ButtonGroup>
-            {" "}
-            <Button
-              onClick={() => {
-                navigate("/signup");
-                localStorage.removeItem("userId");
-              }}
-              color="alternative"
-              className="text-blue-600"
-            >
-              Signup
-            </Button>
-            <Button
-              onClick={() => {
-                navigate("/login");
-                localStorage.removeItem("userId");
-              }}
-              color="alternative"
-              className="text-blue-600"
-            >
-              Login
-            </Button>
-          </ButtonGroup>
+          {!user && (
+            <ButtonGroup>
+              {" "}
+              <Button
+                onClick={() => {
+                  navigate("/signup");
+                  localStorage.removeItem("userId");
+                }}
+                color="alternative"
+                className="text-blue-600"
+              >
+                Signup
+              </Button>
+              <Button
+                onClick={() => {
+                  navigate("/login");
+                  localStorage.removeItem("userId");
+                }}
+                color="alternative"
+                className="text-blue-600"
+              >
+                Login
+              </Button>
+            </ButtonGroup>
+          )}
           <Button onClick={handleLogout} color="alternative" className="mx-2">
             <FiLogOut className="text-xl text-blue-600" />
           </Button>
-          <Button color="alternative" className="p-0">
-            <DarkThemeToggle className="text-blue-600" />
-          </Button>
+          <DarkThemeToggle className="rounded-lg border border-gray-200 p-2 text-blue-600 hover:bg-gray-100" />
           <NavbarToggle />
         </div>
+
         <NavbarCollapse>
-          <NavbarLink active>
-            <Link to="/">Home</Link>
-          </NavbarLink>
-          <NavbarLink>
-            <Link to="/about">About</Link>
-          </NavbarLink>
+          <Link
+            className={`${location.pathname === "/" ? "text-blue-600 dark:text-white" : "text-gray-700 hover:text-blue-600 dark:text-gray-400 hover:dark:text-white"}`}
+            to="/"
+          >
+            Home
+          </Link>
+          <Link
+            className={`${location.pathname === "/about" ? "text-blue-600 dark:text-white" : "text-gray-700 hover:text-blue-600 dark:text-gray-400 hover:dark:text-white"}`}
+            to="/about"
+          >
+            About
+          </Link>
           {user && (
-            <NavbarLink>
-              <Link to="/favorites">Favorites</Link>
-            </NavbarLink>
+            <Link
+              className={`${location.pathname === "/favorites" ? "text-blue-600 dark:text-white" : "text-gray-700 hover:text-blue-600 dark:text-gray-400 hover:dark:text-white"}`}
+              to="/favorites"
+            >
+              Favorites
+            </Link>
           )}
           {user && user.isBusiness && (
-            <NavbarLink>
-              <Link to="/my-cards">My Cards</Link>
-            </NavbarLink>
+            <Link
+              className={`${location.pathname === "/my-cards" ? "text-blue-600 dark:text-white" : "text-gray-700 hover:text-blue-600 dark:text-gray-400 hover:dark:text-white"}`}
+              to="/my-cards"
+            >
+              My Cards
+            </Link>
           )}
           {user && (
-            <NavbarLink>
-              <Link to="/profile">Profile</Link>
-            </NavbarLink>
+            <Link
+              className={`${location.pathname === "/profile" ? "text-blue-600 dark:text-white" : "text-gray-700 hover:text-blue-600 dark:text-gray-400 hover:dark:text-white"}`}
+              to="/profile"
+            >
+              Profile
+            </Link>
           )}
           {user?.isAdmin && (
-            <NavbarLink>
-              <Link to="/admin-dashboard">Admin Dashboard</Link>
-            </NavbarLink>
+            <Link
+              className={`${location.pathname === "/admin-dashboard" ? "text-blue-600 dark:text-white" : "text-gray-700 hover:text-blue-600 dark:text-gray-400 hover:dark:text-white"}`}
+              to="/admin-dashboard"
+            >
+              Admin Dashboard
+            </Link>
           )}
         </NavbarCollapse>
         {user && user.isBusiness && (

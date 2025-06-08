@@ -8,6 +8,8 @@ import CardDetails from "../../components/CardDetails";
 import type { TCard } from "../../types/TCard";
 import { IoCreateOutline } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
+import { MdDelete, MdModeEdit } from "react-icons/md";
+import Swal from "sweetalert2";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -75,6 +77,34 @@ const Home = () => {
     });
   };
 
+  // מחיקת כרטיס
+  const deleteCard = async (cardId: string) => {
+    if (!token) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Are you sure you want to delete the card you created?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+    });
+
+    if (!result.isConfirmed) return;
+    try {
+      await axios.delete(
+        `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${cardId}`,
+        { headers: { "x-auth-token": token } },
+      );
+
+      // הסרת כרטיס מהרשימה המקומית
+      setCards((prev) => prev.filter((card) => card._id !== cardId));
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
+
   // דפדןף
   const [currentPage, setCurrentPage] = useState(1);
   const onPageChange = (page: number) => setCurrentPage(page);
@@ -92,8 +122,15 @@ const Home = () => {
   }, []);
 
   return (
-    <>
-      <div className="flex flex-wrap items-center justify-center gap-4 p-4 dark:bg-gray-900">
+    <div className="p-4 dark:bg-gray-900">
+      {/* כותרות */}
+      <div className="bg m-8 flex flex-col items-center text-gray-900">
+        <h4 className="text-4xl font-bold dark:text-white">Cards Pages</h4>
+        <h5 className="mt-2 text-xl font-normal text-gray-700 dark:text-white">
+          Here you can find business cards from all categories
+        </h5>
+      </div>
+      <div className="flex flex-wrap items-center justify-center gap-4 p-4">
         {/* כפתור ליצירת כרטיס חדש לעסקים */}
         {user?.isBusiness && (
           <Button
@@ -105,7 +142,6 @@ const Home = () => {
             <IoCreateOutline />
           </Button>
         )}
-
         {/* הצגת הכרטיסים המסוננים */}
         {loading ? (
           <Spinner aria-label="Default status example" />
@@ -149,10 +185,25 @@ const Home = () => {
                   </button>
                 </div>
                 <div className="flex items-center justify-between py-2">
-                  <div className="flex gap-4"></div>
+                  <div className="flex gap-4">
+                    {user?.isBusiness && user._id === card.user_id && (
+                      <>
+                        <MdDelete
+                          onClick={() => deleteCard(card._id)}
+                          className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
+                        />
+                        <MdModeEdit
+                          onClick={() => navigate("/edit-card/" + card._id)}
+                          className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
+                        />
+                      </>
+                    )}
+                  </div>
 
                   <div className="flex gap-4">
-                    <FaPhone className="cursor-pointer text-xl text-blue-600 hover:scale-110" />
+                    <a href={`tel:${card.phone}`}>
+                      <FaPhone className="cursor-pointer text-xl text-blue-600 hover:scale-110" />
+                    </a>
                     {user && (
                       <FaHeart
                         className={`${isLiked ? "text-red-500" : "text-blue-400"} cursor-pointer text-xl hover:scale-110`}
@@ -165,7 +216,6 @@ const Home = () => {
             );
           })
         )}
-
         {/* מודל פרטי כרטיס */}
         <CardDetails
           open={openModal}
@@ -174,7 +224,6 @@ const Home = () => {
           likeOrUnLikeCard={likeOrUnLikeCard}
         />
       </div>
-
       {/* דפדוף */}
       {!loading && (
         <div className="my-5 flex overflow-x-auto sm:justify-center">
@@ -186,7 +235,7 @@ const Home = () => {
           />
         </div>
       )}
-    </>
+    </div>
   );
 };
 export default Home;

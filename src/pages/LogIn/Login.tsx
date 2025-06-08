@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, FloatingLabel, Label } from "flowbite-react";
+import { Button, Card, FloatingLabel } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { joiResolver } from "@hookform/resolvers/joi";
@@ -10,7 +10,6 @@ import { loginSchema } from "../../validations/login.joi";
 import type { TUser } from "../../types/TUser";
 import { userActions } from "../../store/userSlice";
 
-
 type TFormData = {
   email: string;
   password: string;
@@ -19,8 +18,6 @@ type TFormData = {
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
- 
 
   const {
     register,
@@ -75,7 +72,7 @@ const Login = () => {
   return (
     <>
       <main>
-        <div className="flex min-h-screen items-center justify-center bg-gray-50">
+        <div className="flex min-h-screen items-center justify-center ">
           <Card className="w-full max-w-sm text-center">
             <h1 className="text-2xl font-bold">Login</h1>{" "}
             <form
@@ -104,10 +101,6 @@ const Login = () => {
                   {errors.password.message}
                 </p>
               )}
-              <div className="flex items-center gap-2">
-                <Checkbox id="remember" />
-                <Label htmlFor="remember">Remember me</Label>
-              </div>
               <Button type="submit" disabled={!isValid}>
                 Login
               </Button>

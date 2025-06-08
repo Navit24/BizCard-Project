@@ -51,7 +51,7 @@ const CreateCard = () => {
       );
 
       console.log("Success");
-      navigate("/my-card");
+      navigate("/my-cards");
     } catch (error) {
       console.error("Error:", error);
       Swal.fire("Error", "Something went wrong while saving.", "error");

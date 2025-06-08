@@ -1,11 +1,13 @@
-// import { useEffect , useState} from "react";
-import type { TCard } from "../types/TCard";
-// import { useParams } from "react-router-dom";
-// import axios from "axios";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import Swal from "sweetalert2";
+
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { FaHeart, FaPhone } from "react-icons/fa";
 import { Card, Modal, ModalBody, ModalHeader } from "flowbite-react";
-import { useSelector } from "react-redux";
+
+import type { TCard } from "../types/TCard";
 import type { TRootState } from "../store/store";
 
 type CardModalProps = {
@@ -18,24 +20,37 @@ type CardModalProps = {
 const CardDetails = (props: CardModalProps) => {
   const { open, onClose, card, likeOrUnLikeCard } = props;
   const user = useSelector((state: TRootState) => state.userSlice.user);
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  // בדיקה האם המשתמש סימן את הכרטיס בלייק
   const isLiked = card?.likes.includes(user?._id + "");
-  //   const [card, setCard] = useState<TCard>();
-  //   const { id } = useParams<{ id: string }>();
 
-  //   useEffect(() => {
-  //     const getCardByID = async () => {
-  //       try {
-  //         const response = await axios.get(
-  //           `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${id}`,
-  //         );
+  // מחיקת כרטיס לאחר אישור מהמשתמש
+  const deleteCard = async (cardId: string) => {
+    if (!token) return;
 
-  //         setCard(response.data);
-  //       } catch (error) {
-  //         console.error("Error getting card details:", error);
-  //       }
-  //     };
-  //     getCardByID();
-  //   }, [id]);
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Are you sure you want to delete the card you created?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+    });
+
+    if (!result.isConfirmed) return;
+    try {
+      await axios.delete(
+        `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${cardId}`,
+        { headers: { "x-auth-token": token } },
+      );
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  };
 
   return (
     <>
@@ -45,10 +60,10 @@ const CardDetails = (props: CardModalProps) => {
           <div className="flex flex-wrap items-center justify-center dark:bg-gray-900">
             {card && (
               <Card
+                key={card._id}
                 className="m-5 w-full border-2 bg-white shadow-md transition-shadow hover:shadow-xl [&>img]:max-h-48 [&>img]:max-w-full"
                 imgAlt={card.image.alt}
                 imgSrc={card.image.url}
-                key={card._id}
               >
                 <h5 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                   {card.title}
@@ -67,22 +82,37 @@ const CardDetails = (props: CardModalProps) => {
                   <b>Web:</b> {card.web}
                 </p>
                 <p className="font-normal text-gray-700 dark:text-gray-400">
-                  <b>Address:</b> {card.address.street}{" "}
-                  {card.address.houseNumber} {card.address.city}{" "}
+                  <b>Address:</b> {card.address.street}
+                  {card.address.houseNumber} {card.address.city}
                   {card.address.country}
                 </p>
                 <p className="font-normal text-gray-700 dark:text-gray-400">
                   <b>Card Number:</b> {card.bizNumber}
-                </p>{" "}
+                </p>
+
+                {/* אזור כפתורי אקשן */}
                 <div className="flex items-center justify-between py-2">
+                  {/* כפתורי עריכה ומחיקה (למשתמש עסקי שהוא יוצר הכרטיס) */}
                   <div className="flex gap-4">
-                    <MdDelete className="cursor-pointer text-2xl text-blue-600 hover:scale-110" />
-                    <MdModeEdit className="cursor-pointer text-2xl text-blue-600 hover:scale-110" />
+                    {user?.isBusiness && user._id === card.user_id && (
+                      <>
+                        <MdDelete
+                          onClick={() => deleteCard(card._id)}
+                          className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
+                        />
+                        <MdModeEdit
+                          onClick={() => navigate("/edit-card/" + card._id)}
+                          className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
+                        />
+                      </>
+                    )}
                   </div>
 
+                  {/* כפתורי טלפון ולייק */}
                   <div className="flex gap-4">
-                    {" "}
-                    <FaPhone className="cursor-pointer text-xl text-blue-600 hover:scale-110" />
+                    <a href={`tel:${card.phone}`}>
+                      <FaPhone className="cursor-pointer text-xl text-blue-600 hover:scale-110" />
+                    </a>
                     {user && (
                       <FaHeart
                         className={`${isLiked ? "text-red-500" : "text-blue-400"} cursor-pointer text-xl hover:scale-110`}
