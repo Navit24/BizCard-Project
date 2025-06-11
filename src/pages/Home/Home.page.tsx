@@ -132,7 +132,7 @@ const Home = () => {
       </div>
       <div className="flex flex-wrap items-center justify-center gap-4 p-4">
         {/* כפתור ליצירת כרטיס חדש לעסקים */}
-        {user?.isBusiness && (
+        {(user?.isBusiness || user?.isAdmin) && (
           <Button
             onClick={() => {
               navigate("/create-card");

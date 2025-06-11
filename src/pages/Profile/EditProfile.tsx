@@ -1,5 +1,5 @@
 import { joiResolver } from "@hookform/resolvers/joi";
-import { Button, FloatingLabel } from "flowbite-react";
+import { Button, Card } from "flowbite-react";
 import type { TUser } from "../../types/TUser";
 import axios from "axios";
 import { useForm } from "react-hook-form";
@@ -9,31 +9,28 @@ import { userActions } from "../../store/userSlice";
 import { useNavigate } from "react-router-dom";
 import { editProfileSchema } from "../../validations/editProfile.joi";
 import Swal from "sweetalert2";
+import { RxReset } from "react-icons/rx";
+import InputField from "../../components/InputField";
 
 const EditProfile = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const user = useSelector((state: TRootState) => state.userSlice.user);
   const userId = user?._id;
   const token = localStorage.getItem("token");
-  const dispatch = useDispatch();
 
+  // אתחול הטופס עם ערכי ברירת מחדל ווילדציה
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isValid },
   } = useForm<TUser>({
     defaultValues: {
-      name: {
-        first: "",
-        middle: "",
-        last: "",
-      },
+      name: { first: "", middle: "", last: "" },
       phone: "",
       email: "",
-      image: {
-        url: "",
-        alt: "",
-      },
+      image: { url: "", alt: "" },
       address: {
         state: "",
         country: "",
@@ -42,13 +39,12 @@ const EditProfile = () => {
         houseNumber: 1,
         zip: 0,
       },
-      isBusiness: false,
     },
     mode: "onChange",
     resolver: joiResolver(editProfileSchema),
   });
 
-  // פונקציית שליחת טופס
+  // שליחת הטופס לאחר אישור המשתמש
   const submitForm = async (data: TUser) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -76,7 +72,6 @@ const EditProfile = () => {
       navigate("/profile");
       Swal.fire("Saved!", "Your profile has been updated.", "success");
     } catch (error) {
-      console.error("Error:", error);
       Swal.fire("Error", "Something went wrong while saving.", "error");
     }
   };
@@ -86,174 +81,104 @@ const EditProfile = () => {
       <main>
         <div className="flex min-h-screen items-center justify-center">
           <div className="w-full max-w-xl text-center">
-            <h5 className="mb-4 flex text-2xl font-bold text-gray-900 dark:text-white">
-              Edit Your Profile
-            </h5>
+            <Card className="w-full max-w-xl text-center">
+              <h5 className="flex text-2xl font-bold text-gray-900 dark:text-white">
+                Edit Your Profile
+              </h5>
+              {/* טופס עריכת פרופיל */}
+              <form
+                onSubmit={handleSubmit(submitForm)}
+                className="flex flex-col gap-4"
+              >
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  {/* שדות שם פרטי, שני, משפחה */}
+                  <InputField
+                    label="First Name *"
+                    register={register("name.first")}
+                    error={errors.name?.first}
+                  />
+                  <InputField
+                    label="Middle Name"
+                    register={register("name.middle")}
+                    error={errors.name?.middle}
+                  />
+                  <InputField
+                    label="Last Name *"
+                    register={register("name.last")}
+                    error={errors.name?.last}
+                  />
+                  {/* שדות אימייל וטלפון */}
+                  <InputField
+                    label="Phone *"
+                    register={register("phone")}
+                    error={errors.phone}
+                    type="tel"
+                  />
+                  <InputField
+                    label="Email Address *"
+                    register={register("email")}
+                    error={errors.email}
+                    type="email"
+                  />
 
-            {/* טופס עריכת פרופיל */}
-            <form
-              onSubmit={handleSubmit(submitForm)}
-              className="flex flex-col gap-4"
-            >
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {/* שדות שם פרטי, שני, משפחה */}
-                <FloatingLabel
-                  {...register("name.first")}
-                  type="name"
-                  variant="outlined"
-                  label="First Name *"
-                  color={errors.name?.first && "error"}
-                />
-                {errors.name?.first && (
-                  <p className="text-sm text-red-500">
-                    {errors.name.first.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("name.middle")}
-                  type="name"
-                  variant="outlined"
-                  label="Middle Name"
-                  color={errors.name?.middle && "error"}
-                />{" "}
-                {errors.name?.middle && (
-                  <p className="text-sm text-red-500">
-                    {errors.name.middle.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("name.last")}
-                  type="name"
-                  variant="outlined"
-                  label="Last Name *"
-                  color={errors.name?.last && "error"}
-                />{" "}
-                {errors.name?.last && (
-                  <p className="text-sm text-red-500">
-                    {errors.name.last.message}
-                  </p>
-                )}
-                {/* שדות אימייל וטלפון */}
-                <FloatingLabel
-                  {...register("phone")}
-                  type="phone"
-                  variant="outlined"
-                  label="Phone *"
-                  color={errors.phone && "error"}
-                />{" "}
-                {errors.phone && (
-                  <p className="text-sm text-red-500">{errors.phone.message}</p>
-                )}
-                <FloatingLabel
-                  {...register("email")}
-                  type="email"
-                  variant="outlined"
-                  label="Email Address *"
-                  color={errors.email && "error"}
-                />{" "}
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
-                {/* שדות תמונה */}
-                <FloatingLabel
-                  {...register("image.url")}
-                  variant="outlined"
-                  label="Image URL"
-                  color={errors.image?.url && "error"}
-                />{" "}
-                {errors.image?.url && (
-                  <p className="text-sm text-red-500">
-                    {errors.image.url.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("image.alt")}
-                  variant="outlined"
-                  label="Image Alt"
-                  color={errors.image?.alt && "error"}
-                />{" "}
-                {errors.image?.alt && (
-                  <p className="text-sm text-red-500">
-                    {errors.image.alt.message}
-                  </p>
-                )}
-                {/* כתובת */}
-                <FloatingLabel
-                  {...register("address.state")}
-                  variant="outlined"
-                  label="State"
-                  color={errors.address?.state && "error"}
-                />{" "}
-                {errors.address?.state && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.state.message}
-                  </p>
-                )}{" "}
-                <FloatingLabel
-                  {...register("address.country")}
-                  variant="outlined"
-                  label="Country *"
-                  color={errors.address?.country && "error"}
-                />{" "}
-                {errors.address?.country && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.country.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("address.city")}
-                  variant="outlined"
-                  label="City *"
-                  color={errors.address?.city && "error"}
-                />{" "}
-                {errors.address?.city && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.city.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("address.street")}
-                  variant="outlined"
-                  label="Street *"
-                  color={errors.address?.street && "error"}
-                />{" "}
-                {errors.address?.street && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.street.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("address.houseNumber")}
-                  type="number"
-                  variant="outlined"
-                  label="House Number"
-                  color={errors.address?.houseNumber && "error"}
-                />{" "}
-                {errors.address?.houseNumber && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.houseNumber.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("address.zip")}
-                  type="number"
-                  variant="outlined"
-                  label="Zip"
-                  color={errors.address?.zip && "error"}
-                />
-                {errors.address?.zip && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.zip.message}
-                  </p>
-                )}{" "}
-              </div>
-
-              {/* כפתורים */}
-              <Button type="submit" disabled={!isValid}>
-                Save Changes
-              </Button>
-              <Button onClick={() => navigate(-1)}>Cancel</Button>
-            </form>
+                  {/* שדות תמונה */}
+                  <InputField
+                    label="Image URL"
+                    register={register("image.url")}
+                    error={errors.image?.url}
+                    type="url"
+                  />
+                  <InputField
+                    label="Image Alt"
+                    register={register("image.alt")}
+                    error={errors.image?.alt}
+                  />
+                  {/* כתובת מלאה */}
+                  <InputField
+                    label="State"
+                    register={register("address.state")}
+                    error={errors.address?.state}
+                  />
+                  <InputField
+                    label="Country *"
+                    register={register("address.country")}
+                    error={errors.address?.country}
+                  />
+                  <InputField
+                    label="City *"
+                    register={register("address.city")}
+                    error={errors.address?.city}
+                  />
+                  <InputField
+                    label="Street *"
+                    register={register("address.street")}
+                    error={errors.address?.street}
+                  />
+                  <InputField
+                    label="House Number *"
+                    register={register("address.houseNumber")}
+                    error={errors.address?.houseNumber}
+                    type="number"
+                  />
+                  <InputField
+                    label="Zip *"
+                    register={register("address.zip")}
+                    error={errors.address?.zip}
+                    type="number"
+                  />
+                </div>
+                {/* כפתורים */}
+                <Button outline color="red" onClick={() => navigate(-1)}>
+                  Cancel
+                </Button>
+                <Button onClick={() => reset()} outline color="blue">
+                  <RxReset className="text-xl" />
+                </Button>
+                <Button type="submit" disabled={!isValid}>
+                  Save Changes
+                </Button>
+              </form>
+            </Card>
           </div>
         </div>
       </main>

@@ -21,6 +21,7 @@ import CreateCard from "./pages/CreateCard/CreateCard";
 import EditCard from "./pages/EditCard/EditCard";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import NotFound from "./pages/NotFound/NotFound";
+import SiteFooter from "./components/SiteFooter";
 
 // קומפוננטה ראשית שמטפלת בטעינת המשתמש במידה ויש טוקן שמור
 const AppContent = () => {
@@ -121,6 +122,7 @@ const AppContent = () => {
         />
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <SiteFooter />
     </>
   );
 };

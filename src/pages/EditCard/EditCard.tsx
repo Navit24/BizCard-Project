@@ -5,8 +5,9 @@ import { joiResolver } from "@hookform/resolvers/joi";
 import { cardSchema } from "../../validations/card.joi";
 import axios from "axios";
 import Swal from "sweetalert2";
-import { Button, FloatingLabel } from "flowbite-react";
+import { Button, Card } from "flowbite-react";
 import { RxReset } from "react-icons/rx";
+import InputField from "../../components/InputField";
 
 const EditCard = () => {
   const { id } = useParams<{ id: string }>();
@@ -55,7 +56,7 @@ const EditCard = () => {
 
     if (!result.isConfirmed) return;
     try {
-      const response = await axios.put(
+       await axios.put(
         `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${id}`,
         data,
         {
@@ -64,7 +65,7 @@ const EditCard = () => {
           },
         },
       );
-      localStorage.setItem("token", response.data.token);
+     
 
       navigate("/my-cards");
       Swal.fire("Saved!", "Your card has been updated.", "success");
@@ -76,184 +77,118 @@ const EditCard = () => {
 
   return (
     <>
-      {" "}
       <main>
-        <div className="flex min-h-screen items-center justify-center bg-gray-50">
-          {" "}
+        <div className="flex min-h-screen items-center justify-center">
           <div className="w-full max-w-xl text-center">
-            <h5 className="mb-4 flex text-2xl font-bold text-gray-900 dark:text-white">
-              Edit card
-            </h5>
-            <form
-              onSubmit={handleSubmit(submitForm)}
-              className="flex flex-col gap-4"
-            >
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                <FloatingLabel
-                  {...register("title")}
-                  type="title"
-                  variant="outlined"
-                  label="Title *"
-                  color={errors.title && "error"}
-                />{" "}
-                {errors.title && (
-                  <p className="text-sm text-red-500">{errors.title.message}</p>
-                )}
-                <FloatingLabel
-                  {...register("subtitle")}
-                  type="subtitle"
-                  variant="outlined"
-                  label="Subtitle"
-                  color={errors.subtitle && "error"}
-                />{" "}
-                {errors.subtitle && (
-                  <p className="text-sm text-red-500">
-                    {errors.subtitle.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("description")}
-                  type="description"
-                  variant="outlined"
-                  label="Description *"
-                  color={errors.description && "error"}
-                />{" "}
-                {errors.description && (
-                  <p className="text-sm text-red-500">
-                    {errors.description.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("phone")}
-                  type="phone"
-                  variant="outlined"
-                  label="Phone *"
-                  color={errors.phone && "error"}
-                />{" "}
-                {errors.phone && (
-                  <p className="text-sm text-red-500">{errors.phone.message}</p>
-                )}
-                <FloatingLabel
-                  {...register("email")}
-                  type="email"
-                  variant="outlined"
-                  label="Email *"
-                  color={errors.email && "error"}
-                />{" "}
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
-                <FloatingLabel
-                  {...register("web")}
-                  type="web"
-                  variant="outlined"
-                  label="Web"
-                  color={errors.web && "error"}
-                />{" "}
-                {errors.web && (
-                  <p className="text-sm text-red-500">{errors.web.message}</p>
-                )}
-                <FloatingLabel
-                  {...register("image.url")}
-                  variant="outlined"
-                  label="Image URL"
-                  color={errors.image?.url && "error"}
-                />{" "}
-                {errors.image?.url && (
-                  <p className="text-sm text-red-500">
-                    {errors.image.url.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("image.alt")}
-                  variant="outlined"
-                  label="Image Alt"
-                  color={errors.image?.alt && "error"}
-                />{" "}
-                {errors.image?.alt && (
-                  <p className="text-sm text-red-500">
-                    {errors.image.alt.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("address.state")}
-                  variant="outlined"
-                  label="State"
-                  color={errors.address?.state && "error"}
-                />{" "}
-                {errors.address?.state && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.state.message}
-                  </p>
-                )}{" "}
-                <FloatingLabel
-                  {...register("address.country")}
-                  variant="outlined"
-                  label="Country *"
-                  color={errors.address?.country && "error"}
-                />{" "}
-                {errors.address?.country && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.country.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("address.city")}
-                  variant="outlined"
-                  label="City *"
-                  color={errors.address?.city && "error"}
-                />{" "}
-                {errors.address?.city && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.city.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("address.street")}
-                  variant="outlined"
-                  label="Street *"
-                  color={errors.address?.street && "error"}
-                />{" "}
-                {errors.address?.street && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.street.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("address.houseNumber")}
-                  type="number"
-                  variant="outlined"
-                  label="House Number"
-                  color={errors.address?.houseNumber && "error"}
-                />{" "}
-                {errors.address?.houseNumber && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.houseNumber.message}
-                  </p>
-                )}
-                <FloatingLabel
-                  {...register("address.zip")}
-                  type="number"
-                  variant="outlined"
-                  label="Zip"
-                  color={errors.address?.zip && "error"}
-                />{" "}
-                {errors.address?.zip && (
-                  <p className="text-sm text-red-500">
-                    {errors.address.zip.message}
-                  </p>
-                )}{" "}
-                <Button outline color="red" onClick={() => navigate(-1)}>
-                  Cancel
-                </Button>{" "}
-                <Button onClick={() => reset()} outline color="blue">
-                  <RxReset className="text-xl" />
+            <Card className="w-full max-w-xl text-center">
+              <h5 className="text-2xl font-bold text-gray-900 dark:text-white">
+                Edit card
+              </h5>
+              <form
+                onSubmit={handleSubmit(submitForm)}
+                className="flex flex-col gap-4"
+              >
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <InputField
+                    label="Title *"
+                    register={register("title")}
+                    error={errors.title}
+                  />
+                  <InputField
+                    label="Subtitle *"
+                    register={register("subtitle")}
+                    error={errors.subtitle}
+                  />
+                  <InputField
+                    label="Description *"
+                    register={register("description")}
+                    error={errors.description}
+                  />
+                  <InputField
+                    label="Phone *"
+                    register={register("phone")}
+                    error={errors.phone}
+                    type="tel"
+                  />
+                  <InputField
+                    label="Email *"
+                    register={register("email")}
+                    error={errors.email}
+                    type="email"
+                  />
+                  <InputField
+                    label="Web"
+                    register={register("web")}
+                    error={errors.web}
+                    type="url"
+                  />
+                  <InputField
+                    label="Image URL"
+                    register={register("image.url")}
+                    error={errors.image?.url}
+                    type="url"
+                  />
+                  <InputField
+                    label="Image Alt"
+                    register={register("image.alt")}
+                    error={errors.image?.alt}
+                  />
+                  <InputField
+                    label="State"
+                    register={register("address.state")}
+                    error={errors.address?.state}
+                  />
+                  <InputField
+                    label="Country *"
+                    register={register("address.country")}
+                    error={errors.address?.country}
+                  />
+                  <InputField
+                    label="City *"
+                    register={register("address.city")}
+                    error={errors.address?.city}
+                  />
+                  <InputField
+                    label="Street *"
+                    register={register("address.street")}
+                    error={errors.address?.street}
+                  />
+                  <InputField
+                    label="House Number *"
+                    type="number"
+                    register={register("address.houseNumber")}
+                    error={errors.address?.houseNumber}
+                  />
+                  <InputField
+                    label="Zip *"
+                    type="number"
+                    register={register("address.zip")}
+                    error={errors.address?.zip}
+                  />
+                </div>{" "}
+                <div className="flex justify-around gap-4">
+                  <Button
+                    className="w-100 bg-red-100"
+                    outline
+                    color="red"
+                    onClick={() => navigate(-1)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="w-100 bg-gray-100"
+                    onClick={() => reset()}
+                    outline
+                    color="gray"
+                  >
+                    <RxReset className="text-xl" />
+                  </Button>
+                </div>
+                <Button type="submit" disabled={!isValid}>
+                  Save Changes
                 </Button>
-              </div>{" "}
-              <Button type="submit" disabled={!isValid}>
-                Save Changes
-              </Button>
-            </form>
+              </form>{" "}
+            </Card>
           </div>
         </div>
       </main>

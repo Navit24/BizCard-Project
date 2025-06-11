@@ -54,21 +54,21 @@ const Profile = () => {
               <p className="mt-3 flex items-center rounded-md bg-blue-100 px-2 py-1 text-sm font-medium text-blue-600 transition-transform duration-200">
                 {}
                 {(user?.isAdmin && (
-                  <p className="flex items-center gap-2">
+                  <span className="flex items-center gap-2">
                     <RiAdminFill />
                     Admin User
-                  </p>
+                  </span>
                 )) ||
                   (user?.isBusiness ? (
-                    <p className="flex items-center gap-2">
+                    <span className="flex items-center gap-2">
                       <FaUserTie />
                       Business User
-                    </p>
+                    </span>
                   ) : (
-                    <p className="flex items-center gap-2">
+                    <span className="flex items-center gap-2">
                       <FaUser />
                       Regular User
-                    </p>
+                    </span>
                   ))}
               </p>
             </div>

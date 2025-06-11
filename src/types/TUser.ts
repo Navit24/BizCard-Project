@@ -18,7 +18,7 @@ export type TUser = {
     city: string;
     street: string;
     houseNumber: number;
-    zip?: number;
+    zip: number;
   };
   isBusiness: boolean;
   isAdmin: boolean;

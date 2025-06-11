@@ -7,7 +7,7 @@ import axios from "axios";
 import { signupSchema } from "../../validations/signup.joi";
 import type { TUser } from "../../types/TUser";
 import Swal from "sweetalert2";
-import InputField from "./InputField";
+import InputField from "../../components/InputField";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -74,13 +74,17 @@ const Signup = () => {
       <main>
         <div className="flex min-h-screen items-center justify-center">
           <Card className="w-full max-w-xl text-center">
-            <h1 className="text-2xl font-bold">SignUp</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              SignUp
+            </h1>{" "}
+            {/* טופס הרשמה */}
             <form
               onSubmit={handleSubmit(submitForm)}
               className="flex flex-col gap-4"
             >
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                 <>
+                  {/* שדות שם פרטי, שני, משפחה */}
                   <InputField
                     label="First Name *"
                     register={register("name.first")}
@@ -96,7 +100,6 @@ const Signup = () => {
                     register={register("name.last")}
                     error={errors.name?.last}
                   />
-
                   <InputField
                     label="Phone *"
                     register={register("phone")}
@@ -115,7 +118,6 @@ const Signup = () => {
                     error={errors.password}
                     type="password"
                   />
-
                   <InputField
                     label="Image URL"
                     register={register("image.url")}
@@ -127,7 +129,6 @@ const Signup = () => {
                     register={register("image.alt")}
                     error={errors.image?.alt}
                   />
-
                   <InputField
                     label="State"
                     register={register("address.state")}

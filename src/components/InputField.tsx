@@ -6,6 +6,7 @@ interface InputFieldProps {
   type?: string;
   register: UseFormRegisterReturn;
   error?: FieldError;
+  className?:string
 }
 
 const InputField = (props: InputFieldProps) => {

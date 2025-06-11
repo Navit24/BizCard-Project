@@ -84,8 +84,7 @@ const Header = () => {
                   navigate("/signup");
                   localStorage.removeItem("userId");
                 }}
-                color="alternative"
-                className="text-blue-600"
+                className="text-white"
               >
                 Signup
               </Button>
@@ -129,7 +128,7 @@ const Header = () => {
               Favorites
             </Link>
           )}
-          {user && user.isBusiness && (
+          {(user?.isBusiness || user?.isAdmin) && (
             <Link
               className={`${location.pathname === "/my-cards" ? "text-blue-600 dark:text-white" : "text-gray-700 hover:text-blue-600 dark:text-gray-400 hover:dark:text-white"}`}
               to="/my-cards"
@@ -154,7 +153,7 @@ const Header = () => {
             </Link>
           )}
         </NavbarCollapse>
-        {user && user.isBusiness && (
+        {(user?.isBusiness || user?.isAdmin) && (
           <NavbarBrand>
             <Button
               onClick={() => {
@@ -163,7 +162,7 @@ const Header = () => {
               className="rounded-4xl bg-blue-600 hover:bg-blue-700"
             >
               {/* <IoCreateOutline className="text-xl mr-1" />  */}
-              Create card
+              New Card
             </Button>
           </NavbarBrand>
         )}
