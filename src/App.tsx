@@ -22,6 +22,7 @@ import RouteGuard from "./components/common/RouteGuard";
 import SiteFooter from "./components/layout/SiteFooter";
 import Header from "./components/layout/Header";
 import { userActions } from "./store/slices/userSlice";
+import { Spinner } from "flowbite-react";
 
 // קומפוננטה ראשית שמטפלת בטעינת המשתמש במידה ויש טוקן שמור
 const AppContent = () => {
@@ -58,7 +59,12 @@ const AppContent = () => {
   }, [dispatch]);
 
   // כל עוד בטעינה - נציג מסך טעינה זמני
-  if (isLoading) return <div className="mt-10 h-screen text-center"></div>;
+  if (isLoading) return (
+    <div className="mt-10 h-screen text-center">
+      {" "}
+      <Spinner aria-label="Default status example" />
+    </div>
+  );
   return (
     <>
       <Header />

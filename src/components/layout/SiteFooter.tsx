@@ -25,26 +25,26 @@ const SiteFooter = () => {
             <Link className="hover:underline" to="/">
               Home
             </Link>
-            <Link className="hover:underline" to="/">
+            <Link className="hover:underline" to="/about">
               About
             </Link>
             {user && (
-              <Link className="hover:underline" to="/">
+              <Link className="hover:underline" to="/favorites">
                 Favorites
               </Link>
             )}
             {(user?.isBusiness || user?.isAdmin) && (
-              <Link className="hover:underline" to="/">
+              <Link className="hover:underline" to="/my-cards">
                 My Cards
               </Link>
             )}
             {user && (
-              <Link className="hover:underline" to="/">
+              <Link className="hover:underline" to="/profile">
                 Profile
               </Link>
             )}
             {user?.isAdmin && (
-              <Link className="hover:underline" to="/">
+              <Link className="hover:underline" to="/admin-dashboard">
                 Admin Deshboard
               </Link>
             )}
