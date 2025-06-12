@@ -113,7 +113,8 @@ const MyCards = () => {
                   </p>
                   <p className="text-gray-700 dark:text-gray-400">
                     <b>Address:</b> {card.address.street}{" "}
-                    {card.address.houseNumber}, {card.address.city}
+                    {card.address.houseNumber}, {card.address.city}{" "}
+                    {card.address.country}
                   </p>
                   <p className="text-gray-700 dark:text-gray-400">
                     <b>Card Number:</b> {card.bizNumber}
