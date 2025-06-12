@@ -71,7 +71,7 @@ const Header = () => {
           {user && (
             <Link
               to={"/profile"}
-              className="mx-4 flex items-center text-blue-600 hover:scale-105"
+              className="mx-4 flex items-center text-blue-600 hover:scale-105 dark:text-white"
             >
               Hello, {user.name.first}
             </Link>
@@ -101,7 +101,7 @@ const Header = () => {
             </ButtonGroup>
           )}
           <Button onClick={handleLogout} color="alternative" className="mx-2">
-            <FiLogOut className="text-xl text-blue-600" />
+            <FiLogOut className="text-xl text-blue-600 dark:text-gray-400" />
           </Button>
           <DarkThemeToggle className="rounded-lg border border-gray-200 p-2 text-blue-600 hover:bg-gray-100" />
           <NavbarToggle />

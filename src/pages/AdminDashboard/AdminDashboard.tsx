@@ -52,17 +52,20 @@ const StatusToggle = ({
   );
 };
 
+// קומפוננטה לניהול משתמשים
 const AdminDashboard = () => {
+  // סטייטים עיקריים
   const [users, setUsers] = useState<TUser[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [loading, setLoading] = useState(true); // טוען ראשי
-  const [statusLoading, setStatusLoading] = useState<string | null>(null); // ID של יוזר שטוען שינוי סטטוס
+  const [loading, setLoading] = useState(true); 
+  const [statusLoading, setStatusLoading] = useState<string | null>(null); 
 
   const rowsPerPage = 12;
   const searchWord = useSelector(
     (state: TRootState) => state.searchSlice.searchWord,
   );
 
+  // שליפת כל המשתמשים מהשרת
   const getAllUsers = async () => {
     const token = localStorage.getItem("token");
     setLoading(true);
@@ -79,9 +82,10 @@ const AdminDashboard = () => {
     }
   };
 
+  // שינוי סטטוס עיקסי למשתמש
   const toggleBusinessStatus = async (userId: string) => {
     const token = localStorage.getItem("token");
-    setStatusLoading(userId); // סימון ID של משתמש שטוען
+    setStatusLoading(userId); 
     try {
       await axios.patch(
         `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users/${userId}`,
@@ -100,6 +104,7 @@ const AdminDashboard = () => {
     }
   };
 
+  // סינון משתמשים לפי חיפוש
   const filteredUsers = users.filter((user) => {
     return (
       user.name.first.toLowerCase().includes(searchWord.toLowerCase()) ||
@@ -110,16 +115,19 @@ const AdminDashboard = () => {
     );
   });
 
+  // דפדוף 
   const currentRows = filteredUsers.slice(
     (currentPage - 1) * rowsPerPage,
     currentPage * rowsPerPage,
   );
-
   const totalPages = Math.ceil(filteredUsers.length / rowsPerPage);
 
+  // שליפת משתמשים בטעינה ראשונית
   useEffect(() => {
     getAllUsers();
   }, []);
+
+  // מחיקת משתמש
   const deleteUser = async (userId: string) => {
     const token = localStorage.getItem("token");
 
@@ -163,13 +171,12 @@ const AdminDashboard = () => {
   };
 
   return (
-    <main className="p-5">
+    <main className="p-5 dark:bg-gray-900">
       <h5 className="mb-4 text-2xl font-bold text-gray-900 dark:text-white">
         User Management
       </h5>
 
       {loading ? (
-        // ספינר גדול במרכז בעת טעינה
         <div className="flex h-60 items-center justify-center">
           <Spinner color="info" size="xl" />
         </div>
@@ -240,7 +247,7 @@ const AdminDashboard = () => {
                         color="red"
                         className="rounded-full"
                         onClick={() => deleteUser(user._id)}
-                        disabled={user.isAdmin} // אין אפשרות למחוק אדמין
+                        disabled={user.isAdmin}
                       >
                         <MdDelete className="text-xl" />
                         Delete

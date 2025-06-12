@@ -30,6 +30,7 @@ const CardDetails = (props: CardModalProps) => {
   const deleteCard = async (cardId: string) => {
     if (!token) return;
 
+    // פופאפ אישור מחיקה
     const result = await Swal.fire({
       title: "Are you sure?",
       text: "Are you sure you want to delete the card you created?",
@@ -54,6 +55,7 @@ const CardDetails = (props: CardModalProps) => {
 
   return (
     <>
+    {/* מודל להצגת פרטי כרטיס */}
       <Modal show={open} onClose={onClose}>
         <ModalHeader className="border-gray-300">Card details</ModalHeader>
         <ModalBody>
@@ -65,6 +67,7 @@ const CardDetails = (props: CardModalProps) => {
                 imgAlt={card.image.alt}
                 imgSrc={card.image.url}
               >
+                {/* פרטי כרטיס */}
                 <h5 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
                   {card.title}
                 </h5>

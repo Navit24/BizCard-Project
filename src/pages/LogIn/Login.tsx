@@ -6,15 +6,16 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import { jwtDecode } from "jwt-decode";
 import { useDispatch } from "react-redux";
-import { loginSchema } from "../../validations/login.joi";
+import { loginSchema } from "../../validations/userValidations/login.joi";
 import type { TUser } from "../../types/TUser";
-import { userActions } from "../../store/userSlice";
+import { userActions } from "../../store/slices/userSlice";
 
 type TFormData = {
   email: string;
   password: string;
 };
 
+// קומפוננטת להתחברות משתמש קיים
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -31,15 +32,15 @@ const Login = () => {
     mode: "onChange",
     resolver: joiResolver(loginSchema),
   });
+
+  // שליחת טופס התחברות
   const submitForm = async (data: TFormData) => {
-    console.log("Form Submitted:", data);
     try {
       const token = await axios.post(
         "https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users/login",
         data,
       );
       localStorage.setItem("token", token.data);
-      console.log("Success");
       Swal.fire({
         position: "top-end",
         icon: "success",
@@ -50,7 +51,6 @@ const Login = () => {
       navigate("/");
 
       const parsedToken = jwtDecode(token.data) as TUser;
-      console.log(parsedToken);
       axios.defaults.headers.common["x-auth-token"] = token.data;
       const response = await axios.get(
         "https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users/" +
@@ -58,7 +58,6 @@ const Login = () => {
       );
       dispatch(userActions.login(response.data));
     } catch (error) {
-      console.error("Error:", error);
       Swal.fire({
         position: "top-end",
         icon: "error",
@@ -72,9 +71,9 @@ const Login = () => {
   return (
     <>
       <main>
-        <div className="flex min-h-screen items-center justify-center ">
+        <div className="flex min-h-screen items-center justify-center dark:bg-gray-900">
           <Card className="w-full max-w-sm text-center">
-            <h1 className="text-2xl font-bold">Login</h1>{" "}
+            <h1 className="text-2xl font-bold dark:text-white">Login</h1>{" "}
             <form
               onSubmit={handleSubmit(submitForm)}
               className="flex flex-col gap-4"
@@ -105,7 +104,7 @@ const Login = () => {
                 Login
               </Button>
             </form>
-            <p className="mt-5">
+            <p className="mt-5 dark:text-white">
               Don't have an account?{" "}
               <Link className="text-blue-600" to={"/signup"}>
                 Sign up

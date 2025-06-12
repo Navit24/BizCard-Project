@@ -5,10 +5,14 @@ import { FaHeart, FaPhone } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import type { TRootState } from "../../store/store";
 import type { TCard } from "../../types/TCard";
-import CardDetails from "../../components/CardDetails";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import {
+  deleteCard,
+  likeOrUnLikeCard,
+  filterBySearch,
+} from "../../ustils/cardUtils";
+import CardDetails from "../../components/cards/CardDetails";
 
 const Favorites = () => {
   const [cards, setCards] = useState<TCard[]>([]);
@@ -23,7 +27,7 @@ const Favorites = () => {
   const user = useSelector((state: TRootState) => state.userSlice.user);
   const token = localStorage.getItem("token");
 
-  // שליפת כרטיסים מועדפים מהשרת
+  // שליפת כרטיסים מועדפים מהשרת בעת טעינת הדף
   const getFavoriteCards = async () => {
     setLoading(true);
     try {
@@ -48,15 +52,10 @@ const Favorites = () => {
     }
   }, [user?._id]);
 
-  // הסרת לייק על כרטיס
-  const likeOrUnLikeCard = async (cardId: string) => {
-    if (!token || !user) return;
-    try {
-      await axios.patch(
-        `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${cardId}`,
-        {},
-        { headers: { "x-auth-token": token } },
-      );
+  // לייק או הסרת לייק על כרטיס (פונקציית עזר)
+  const handleLikeOrUnlike = async (cardId: string) => {
+    const success = await likeOrUnLikeCard(cardId, token);
+    if (success && user) {
       setCards((prevCards) => {
         return prevCards.filter((card) => {
           const isLiked = card.likes.includes(user._id);
@@ -66,50 +65,19 @@ const Favorites = () => {
           return true;
         });
       });
-    } catch (error) {
-      console.log("Error liking/unliking card:", error);
     }
   };
 
-  // סינון כרטיסים לפי מחרוזות חיפוש
-  const filterBySearch = () => {
-    return cards.filter((card) => {
-      return (
-        card.title.toLowerCase().includes(searchWord.toLowerCase()) ||
-        card.subtitle.toLowerCase().includes(searchWord.toLowerCase()) ||
-        card.phone.toLowerCase().includes(searchWord.toLowerCase()) ||
-        card.description.toLowerCase().includes(searchWord.toLowerCase())
-      );
-    });
-  };
-
-  // מחיקת כרטיס
-  const deleteCard = async (cardId: string) => {
-    if (!token) return;
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Are you sure you want to delete the card you created?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-    });
-
-    if (!result.isConfirmed) return;
-    try {
-      await axios.delete(
-        `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${cardId}`,
-        { headers: { "x-auth-token": token } },
-      );
-
-      // הסרת כרטיס מהרשימה המקומית
+  //  (פונקציית עזר) מחיקת כרטיס
+  const handleDeleteCard = async (cardId: string) => {
+    const success = await deleteCard(cardId, token);
+    if (success) {
       setCards((prev) => prev.filter((card) => card._id !== cardId));
-    } catch (error) {
-      console.error("Error:", error);
     }
   };
+
+  // (פונקציית עזר) סינון כרטיסים לפי מחרוזות חיפוש
+  const filteredCards = filterBySearch(cards, searchWord);
   return (
     <>
       <div className="p-4 dark:bg-gray-900">
@@ -128,7 +96,7 @@ const Favorites = () => {
           ) : cards.length === 0 ? (
             <p className="mt-4 text-gray-500"> No favorite cards found.</p>
           ) : (
-            filterBySearch().map((card) => {
+            filteredCards.map((card) => {
               const isLiked = card.likes.includes(user?._id + "");
               return (
                 <Card
@@ -175,7 +143,7 @@ const Favorites = () => {
                       {user?.isBusiness && user._id === card.user_id && (
                         <>
                           <MdDelete
-                            onClick={() => deleteCard(card._id)}
+                            onClick={() => handleDeleteCard(card._id)}
                             className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
                           />
                           <MdModeEdit
@@ -192,7 +160,7 @@ const Favorites = () => {
 
                       <FaHeart
                         className={`${isLiked ? "text-red-500" : "text-blue-400"} cursor-pointer text-xl hover:scale-110`}
-                        onClick={() => likeOrUnLikeCard(card._id)}
+                        onClick={() => handleLikeOrUnlike(card._id)}
                       />
                     </div>
                   </div>
@@ -205,7 +173,7 @@ const Favorites = () => {
             open={openModal}
             onClose={() => setOpenModal(false)}
             card={selectedCard}
-            likeOrUnLikeCard={likeOrUnLikeCard}
+            likeOrUnLikeCard={handleLikeOrUnlike}
           />
         </div>
       </div>

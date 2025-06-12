@@ -1,19 +1,16 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Header from "./components/Header";
-import Home from "./pages/Home/Home.page";
-import About from "./pages/About/About.page";
-import Favorites from "./pages/Favorites/Favorites.page";
+import Home from "./pages/Home/Home";
+import About from "./pages/About/About";
+import Favorites from "./pages/Favorites/Favorites";
 import Signup from "./pages/SignUp/Signup";
 import { Provider } from "react-redux";
 import store from "./store/store";
-import RouteGuard from "./components/RouteGuard";
-import Profile from "./pages/Profile/Profile.page";
-import MyCards from "./pages/MyCards/MyCard.page";
+import Profile from "./pages/Profile/Profile";
+import MyCards from "./pages/MyCards/MyCard";
 import Login from "./pages/LogIn/Login";
 import EditProfile from "./pages/Profile/EditProfile";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { userActions } from "./store/userSlice";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import type { TUser } from "./types/TUser";
@@ -21,7 +18,10 @@ import CreateCard from "./pages/CreateCard/CreateCard";
 import EditCard from "./pages/EditCard/EditCard";
 import AdminDashboard from "./pages/AdminDashboard/AdminDashboard";
 import NotFound from "./pages/NotFound/NotFound";
-import SiteFooter from "./components/SiteFooter";
+import RouteGuard from "./components/common/RouteGuard";
+import SiteFooter from "./components/layout/SiteFooter";
+import Header from "./components/layout/Header";
+import { userActions } from "./store/slices/userSlice";
 
 // קומפוננטה ראשית שמטפלת בטעינת המשתמש במידה ויש טוקן שמור
 const AppContent = () => {

@@ -2,13 +2,14 @@ import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import type { TCard } from "../../types/TCard";
 import { joiResolver } from "@hookform/resolvers/joi";
-import { cardSchema } from "../../validations/card.joi";
+import { cardSchema } from "../../validations/cardValidations/card.joi";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { Button, Card } from "flowbite-react";
 import { RxReset } from "react-icons/rx";
-import InputField from "../../components/InputField";
+import InputField from "../../components/common/InputField";
 
+// קומפוננטה לעריכת פרטי משתמש
 const EditCard = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -56,7 +57,7 @@ const EditCard = () => {
 
     if (!result.isConfirmed) return;
     try {
-       await axios.put(
+      await axios.put(
         `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${id}`,
         data,
         {
@@ -65,7 +66,6 @@ const EditCard = () => {
           },
         },
       );
-     
 
       navigate("/my-cards");
       Swal.fire("Saved!", "Your card has been updated.", "success");
@@ -78,7 +78,7 @@ const EditCard = () => {
   return (
     <>
       <main>
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex min-h-screen items-center justify-center dark:bg-gray-900">
           <div className="w-full max-w-xl text-center">
             <Card className="w-full max-w-xl text-center">
               <h5 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -168,7 +168,7 @@ const EditCard = () => {
                 </div>{" "}
                 <div className="flex justify-around gap-4">
                   <Button
-                    className="w-100 bg-red-100"
+                    className="w-100 bg-red-100 dark:bg-red-800 dark:text-white"
                     outline
                     color="red"
                     onClick={() => navigate(-1)}
@@ -176,7 +176,7 @@ const EditCard = () => {
                     Cancel
                   </Button>
                   <Button
-                    className="w-100 bg-gray-100"
+                    className="w-100 bg-gray-100 dark:bg-gray-900"
                     onClick={() => reset()}
                     outline
                     color="gray"

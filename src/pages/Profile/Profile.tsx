@@ -12,12 +12,13 @@ import { MdEmail } from "react-icons/md";
 import { RiAdminFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 
+// קומפוננטה להצגת פרופיל משתמש
 const Profile = () => {
   const user = useSelector((state: TRootState) => state.userSlice.user);
   const navigate = useNavigate();
 
   return (
-    <div className="flex min-h-screen flex-col items-center pt-10">
+    <div className="flex min-h-screen flex-col items-center pt-10 dark:bg-gray-900">
       {/* כותרת וכפתור עריכה */}
       <div className="mb-4 flex w-full max-w-lg items-center justify-between px-2">
         <h5 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -52,7 +53,6 @@ const Profile = () => {
             {/* סוג המשתמש */}
             <div className="flex justify-start">
               <p className="mt-3 flex items-center rounded-md bg-blue-100 px-2 py-1 text-sm font-medium text-blue-600 transition-transform duration-200">
-                {}
                 {(user?.isAdmin && (
                   <span className="flex items-center gap-2">
                     <RiAdminFill />

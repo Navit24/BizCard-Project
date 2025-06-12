@@ -3,37 +3,37 @@ import { useSelector } from "react-redux";
 import type { TRootState } from "../store/store";
 import { Navigate } from "react-router-dom";
 
-// Type for the component's props
 type RouteGuardProps = {
   children: ReactNode;
   isBusiness?: boolean;
   isAdmin?: boolean;
 };
 
+// קומפוננטה להגנה על מסלולים - בודקת הרשאות משתמש ומפנה במידת הצורך
 const RouteGuard = (props: RouteGuardProps) => {
   const { children, isBusiness, isAdmin } = props;
 
-  //   Get the current user from the Redux store
+  // שליפת משתמש מהסטור
   const user = useSelector((state: TRootState) => {
     return state.userSlice.user;
   });
 
-  // If no user is logged in – redirect to the sign-in page
+  // אם אין משתמש מחובר - הפניה לדף ההתחברות
   if (!user) {
     return <Navigate to="/Login" />;
   }
 
-  // If the route requires a business user and the user is not a business – redirect to home
+  //אם נדרש משתמש עסקי והמשתמש אינו עסקי- הפניה אל דף הבית
   if (isBusiness && !user.isBusiness) {
     return <Navigate to="/" />;
   }
 
-  // If the route requires an admin and the user is not an admin – redirect to home
+  //אם נדרש משתמש אדמין והמשתמש אינו אדמין- הפניה אל דף הבית
   if (isAdmin && !user.isAdmin) {
     return <Navigate to="/" />;
   }
 
-  // If all checks pass – render the protected children
+  // אם כל הבדיקות עוברות- הצגת הילדים
   return <>{children}</>;
 };
 export default RouteGuard;

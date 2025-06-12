@@ -20,7 +20,7 @@ export const editProfileSchema = Joi.object({
       "string.max": "Last name must be less than 256 characters",
       "any.required": "Last name is required",
     }),
-  }),
+  }).unknown(true),
 
   phone: Joi.string()
     .pattern(/0[0-9]{1,2}-?\s?[0-9]{3}\s?[0-9]{4}/)
@@ -51,7 +51,7 @@ export const editProfileSchema = Joi.object({
       "string.min": "Image alt must be at least 2 characters",
       "string.max": "Image alt must be less than 256 characters",
     }),
-  }),
+  }).unknown(true),
 
   address: Joi.object({
     state: Joi.string().allow(""),
@@ -76,7 +76,8 @@ export const editProfileSchema = Joi.object({
       "number.base": "Zip code must be a number",
       "any.required": "Zip is required",
     }),
-  }),
+  }).unknown(true),
+
   isBusiness: Joi.boolean(),
   isAdmin: Joi.boolean().allow("", null),
-});
+}).unknown(true); 

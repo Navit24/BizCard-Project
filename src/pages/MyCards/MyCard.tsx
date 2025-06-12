@@ -3,12 +3,16 @@ import type { TCard } from "../../types/TCard";
 import { useSelector } from "react-redux";
 import type { TRootState } from "../../store/store";
 import axios from "axios";
-import CardDetails from "../../components/CardDetails";
 import { Card } from "flowbite-react";
 import { FaHeart, FaPhone } from "react-icons/fa";
 import { MdDelete, MdModeEdit } from "react-icons/md";
-import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
+import {
+  deleteCard,
+  likeOrUnLikeCard,
+  filterBySearch,
+} from "../../ustils/cardUtils";
+import CardDetails from "../../components/cards/CardDetails";
 
 const MyCards = () => {
   const [cards, setCards] = useState<TCard[]>([]);
@@ -22,6 +26,7 @@ const MyCards = () => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
+  // שליפת כרטיסים שנוצרו על ידי המשתמש בעת טעינת הדף
   useEffect(() => {
     getMyCards();
   }, []);
@@ -38,63 +43,36 @@ const MyCards = () => {
       console.error("Error fetching my cards:", error);
     }
   };
-  // ---מחיקת כרטיס---
-  const deleteCard = async (cardId: string) => {
-    if (!token) return;
-    const result = await Swal.fire({
-      title: "Are you sure?",
-      text: "Are you sure you want to delete the card you created?",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "Cancel",
-      confirmButtonColor: "#d33",
-      cancelButtonColor: "#3085d6",
-    });
+  
+  // לייק או הסרת לייק על כרטיס (פונקציית עזר)
+  const handleLikeOrUnlike = async (cardId: string) => {
+    const success = await likeOrUnLikeCard(cardId, token);
+    if (success && user) {
+      setCards((prevCards) => {
+        return prevCards.map((card) => {
+          if (card._id === cardId) {
+            const isLiked = card.likes.includes(user._id + "");
+            const newLikes = isLiked
+              ? card.likes.filter((like) => like !== user._id + "")
+              : [...card.likes, user._id + ""];
+            return { ...card, likes: newLikes };
+          }
+          return card;
+        });
+      });
+    }
+  };
 
-    if (!result.isConfirmed) return;
-    try {
-      await axios.delete(
-        `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${cardId}`,
-        { headers: { "x-auth-token": token } },
-      );
-
-      // הסרת כרטיס מהרשימה המקומית
+  // מחיקת כרטיס (פונקציית עזר)
+  const handleDeleteCard = async (cardId: string) => {
+    const success = await deleteCard(cardId, token);
+    if (success) {
       setCards((prev) => prev.filter((card) => card._id !== cardId));
-    } catch (error) {
-      console.error("Error:", error);
     }
   };
-  const likeOrUnLikeCard = async (cardId: string) => {
-    try {
-      const token = localStorage.getItem("token");
-      axios.defaults.headers.common["x-auth-token"] = token;
 
-      await axios.patch(
-        `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/cards/${cardId}`,
-      );
-
-      const cardIndex = cards.findIndex((card) => card._id === cardId);
-      const updatedCards = [...cards];
-      const card = updatedCards[cardIndex];
-
-      if (card.likes.includes(user?._id + "")) {
-        card.likes = card.likes.filter((id) => id !== user?._id + "");
-      } else {
-        card.likes.push(user?._id + "");
-      }
-
-      updatedCards[cardIndex] = card;
-      setCards(updatedCards);
-    } catch (error) {
-      console.log("Error liking/unliking card:", error);
-    }
-  };
-  const filterBySearch = cards.filter((card) =>
-    [card.title, card.subtitle, card.phone, card.description].some((field) =>
-      field.toLowerCase().includes(searchWord.toLowerCase()),
-    ),
-  );
+  // סינון כרטיסים לפי מחרוזות חיפוש (פונקציית עזר)
+  const filteredCards = filterBySearch(cards, searchWord);
 
   return (
     <>
@@ -108,12 +86,12 @@ const MyCards = () => {
           </h5>
         </div>{" "}
         <div className="flex flex-wrap items-center justify-center gap-4 p-4">
-          {filterBySearch.length === 0 ? (
+          {filteredCards.length === 0 ? (
             <p className="mt-4 text-gray-500">
               No cards you created were found.
             </p>
           ) : (
-            filterBySearch.map((card) => {
+            filteredCards.map((card) => {
               const isLiked = card.likes.includes(user?._id + "");
 
               return (
@@ -156,7 +134,7 @@ const MyCards = () => {
                       {user?.isBusiness && user._id === card.user_id && (
                         <>
                           <MdDelete
-                            onClick={() => deleteCard(card._id)}
+                            onClick={() => handleDeleteCard(card._id)}
                             className="cursor-pointer text-2xl text-blue-600 hover:scale-110"
                           />
                           <MdModeEdit
@@ -174,7 +152,7 @@ const MyCards = () => {
                       {user && (
                         <FaHeart
                           className={`${isLiked ? "text-red-500" : "text-blue-400"} cursor-pointer text-xl hover:scale-110`}
-                          onClick={() => likeOrUnLikeCard(card._id)}
+                          onClick={() => handleLikeOrUnlike(card._id)}
                         />
                       )}
                     </div>
@@ -188,7 +166,7 @@ const MyCards = () => {
           open={openModal}
           onClose={() => setOpenModal(false)}
           card={selectedCard}
-          likeOrUnLikeCard={likeOrUnLikeCard}
+          likeOrUnLikeCard={handleLikeOrUnlike}
         />
       </div>
     </>

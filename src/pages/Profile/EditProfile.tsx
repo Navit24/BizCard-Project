@@ -5,13 +5,15 @@ import axios from "axios";
 import { useForm } from "react-hook-form";
 import type { TRootState } from "../../store/store";
 import { useDispatch, useSelector } from "react-redux";
-import { userActions } from "../../store/userSlice";
 import { useNavigate } from "react-router-dom";
-import { editProfileSchema } from "../../validations/editProfile.joi";
+import { editProfileSchema } from "../../validations/userValidations/editProfile.joi";
 import Swal from "sweetalert2";
 import { RxReset } from "react-icons/rx";
-import InputField from "../../components/InputField";
+import InputField from "../../components/common/InputField";
+import { useEffect } from "react";
+import { userActions } from "../../store/slices/userSlice";
 
+// קומפוננטה לעריכת פרטי משתמש
 const EditProfile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -19,30 +21,45 @@ const EditProfile = () => {
   const userId = user?._id;
   const token = localStorage.getItem("token");
 
-  // אתחול הטופס עם ערכי ברירת מחדל ווילדציה
+  // אתחול הטופס עם ערכי המשתמש הקיימים
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isValid },
   } = useForm<TUser>({
-    defaultValues: {
-      name: { first: "", middle: "", last: "" },
-      phone: "",
-      email: "",
-      image: { url: "", alt: "" },
-      address: {
-        state: "",
-        country: "",
-        city: "",
-        street: "",
-        houseNumber: 1,
-        zip: 0,
-      },
-    },
     mode: "onChange",
     resolver: joiResolver(editProfileSchema),
   });
+
+  useEffect(() => {
+    if (user) {
+      const safeUser = {
+        name: {
+          first: user.name?.first || "",
+          middle: user.name?.middle || "",
+          last: user.name?.last || "",
+        },
+        phone: user.phone || "",
+        email: user.email || "",
+        image: {
+          url: user.image?.url || "",
+          alt: user.image?.alt || "",
+        },
+        address: {
+          state: user.address?.state || "",
+          country: user.address?.country || "",
+          city: user.address?.city || "",
+          street: user.address?.street || "",
+          houseNumber: user.address?.houseNumber || 1,
+          zip: user.address?.zip || 0,
+        },
+        isBusiness: user.isBusiness || false,
+        isAdmin: user.isAdmin || false,
+      };
+      reset(safeUser);
+    }
+  }, [user, reset]);
 
   // שליחת הטופס לאחר אישור המשתמש
   const submitForm = async (data: TUser) => {
@@ -56,22 +73,35 @@ const EditProfile = () => {
     });
 
     if (!result.isConfirmed) return;
+    const { _id, email, password, isBusiness, isAdmin, ...dataToSend } = data;
 
     try {
-      const response = await axios.patch(
+      const response = await axios.put(
         `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users/${userId}`,
-        data,
+        dataToSend,
         {
           headers: {
             "x-auth-token": token,
           },
         },
       );
-      localStorage.setItem("token", response.data.token);
-      dispatch(userActions.login(response.data));
+      // שמירת הטוקן החדש (אם קיים)
+      if (response.data.token) {
+        localStorage.setItem("token", response.data.token);
+      }
+      // שליפת נתוני המשתמש המעודכנים מהשרת
+      const userResponse = await axios.get(
+        `https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users/${userId}`,
+        {
+          headers: {
+            "x-auth-token": response.data.token || token,
+          },
+        },
+      );
+      dispatch(userActions.login(userResponse.data));
       navigate("/profile");
       Swal.fire("Saved!", "Your profile has been updated.", "success");
-    } catch (error) {
+    } catch (error: any) {
       Swal.fire("Error", "Something went wrong while saving.", "error");
     }
   };
@@ -79,7 +109,7 @@ const EditProfile = () => {
   return (
     <>
       <main>
-        <div className="flex min-h-screen items-center justify-center">
+        <div className="flex min-h-screen items-center justify-center dark:bg-gray-900">
           <div className="w-full max-w-xl text-center">
             <Card className="w-full max-w-xl text-center">
               <h5 className="flex text-2xl font-bold text-gray-900 dark:text-white">
@@ -168,12 +198,24 @@ const EditProfile = () => {
                   />
                 </div>
                 {/* כפתורים */}
-                <Button outline color="red" onClick={() => navigate(-1)}>
-                  Cancel
-                </Button>
-                <Button onClick={() => reset()} outline color="blue">
-                  <RxReset className="text-xl" />
-                </Button>
+                <div className="flex justify-around gap-4">
+                  <Button
+                    className="w-100 bg-red-100 dark:bg-red-800 dark:text-white"
+                    outline
+                    color="red"
+                    onClick={() => navigate(-1)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="w-100 bg-gray-100 dark:bg-gray-900"
+                    onClick={() => reset()}
+                    outline
+                    color="gray"
+                  >
+                    <RxReset className="text-xl" />
+                  </Button>
+                </div>
                 <Button type="submit" disabled={!isValid}>
                   Save Changes
                 </Button>
