@@ -11,11 +11,11 @@ import {
 import { FiLogOut } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { userActions } from "../store/userSlice";
-import type { TRootState } from "../store/store";
 import Swal from "sweetalert2";
-import { searchActions } from "../store/searchSlice";
 import { IoMdSearch } from "react-icons/io";
+import type { TRootState } from "../../store/store";
+import { userActions } from "../../store/slices/userSlice";
+import { searchActions } from "../../store/slices/searchSlice";
 // import { IoCreateOutline } from "react-icons/io5";
 
 const Header = () => {

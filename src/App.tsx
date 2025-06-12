@@ -9,7 +9,7 @@ import Profile from "./pages/Profile/Profile";
 import MyCards from "./pages/MyCards/MyCard";
 import Login from "./pages/LogIn/Login";
 import EditProfile from "./pages/Profile/EditProfile";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
@@ -26,6 +26,7 @@ import { userActions } from "./store/slices/userSlice";
 // קומפוננטה ראשית שמטפלת בטעינת המשתמש במידה ויש טוקן שמור
 const AppContent = () => {
   const dispatch = useDispatch();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // פונקציה אסינכרונית לטעינת פרטי המשתמש אם יש טוקן
@@ -48,12 +49,16 @@ const AppContent = () => {
         // במקרה של שגיאה - מחיקת הטוקן מהלוקל סטורג והצגת שגיאה בקונסול
         console.error("Error fetching or decoding user:", error);
         localStorage.removeItem("token");
+      } finally {
+        setIsLoading(false);
       }
     };
 
     getUser();
   }, [dispatch]);
 
+  // כל עוד בטעינה - נציג מסך טעינה זמני
+  if (isLoading) return <div className="mt-10 h-screen text-center"></div>;
   return (
     <>
       <Header />
