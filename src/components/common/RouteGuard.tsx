@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { useSelector } from "react-redux";
-import type { TRootState } from "../store/store";
 import { Navigate } from "react-router-dom";
+import type { TRootState } from "../../store/store";
 
 type RouteGuardProps = {
   children: ReactNode;

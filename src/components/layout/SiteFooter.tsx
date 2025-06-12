@@ -7,7 +7,7 @@ import {
 } from "flowbite-react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
-import type { TRootState } from "../store/store";
+import type { TRootState } from "../../store/store";
 
 const SiteFooter = () => {
   const user = useSelector((state: TRootState) => state.userSlice.user);

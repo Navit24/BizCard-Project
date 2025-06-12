@@ -6,9 +6,9 @@ import Swal from "sweetalert2";
 import { MdDelete, MdModeEdit } from "react-icons/md";
 import { FaHeart, FaPhone } from "react-icons/fa";
 import { Card, Modal, ModalBody, ModalHeader } from "flowbite-react";
+import type { TCard } from "../../types/TCard";
+import type { TRootState } from "../../store/store";
 
-import type { TCard } from "../types/TCard";
-import type { TRootState } from "../store/store";
 
 type CardModalProps = {
   open: boolean;
