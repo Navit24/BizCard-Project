@@ -11,7 +11,7 @@ import {
   deleteCard,
   likeOrUnLikeCard,
   filterBySearch,
-} from "../../ustils/cardUtils";
+} from "../../utils/cardUtils";
 import CardDetails from "../../components/cards/CardDetails";
 
 const Favorites = () => {

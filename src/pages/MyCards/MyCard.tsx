@@ -11,7 +11,7 @@ import {
   deleteCard,
   likeOrUnLikeCard,
   filterBySearch,
-} from "../../ustils/cardUtils";
+} from "../../utils/cardUtils";
 import CardDetails from "../../components/cards/CardDetails";
 
 const MyCards = () => {
@@ -43,7 +43,7 @@ const MyCards = () => {
       console.error("Error fetching my cards:", error);
     }
   };
-  
+
   // לייק או הסרת לייק על כרטיס (פונקציית עזר)
   const handleLikeOrUnlike = async (cardId: string) => {
     const success = await likeOrUnLikeCard(cardId, token);

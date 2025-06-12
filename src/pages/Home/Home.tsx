@@ -12,7 +12,7 @@ import {
   deleteCard,
   likeOrUnLikeCard,
   filterBySearch,
-} from "../../ustils/cardUtils";
+} from "../../utils/cardUtils";
 import CardDetails from "../../components/cards/CardDetails";
 
 const Home = () => {
@@ -36,7 +36,6 @@ const Home = () => {
       );
       setCards(response.data);
     } catch (error) {
-      console.log("Error fetching cards:", error);
     } finally {
       setLoading(false);
     }

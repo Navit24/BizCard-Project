@@ -16,7 +16,6 @@ import { IoMdSearch } from "react-icons/io";
 import type { TRootState } from "../../store/store";
 import { userActions } from "../../store/slices/userSlice";
 import { searchActions } from "../../store/slices/searchSlice";
-// import { IoCreateOutline } from "react-icons/io5";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -161,7 +160,6 @@ const Header = () => {
               }}
               className="rounded-4xl bg-blue-600 hover:bg-blue-700"
             >
-              {/* <IoCreateOutline className="text-xl mr-1" />  */}
               New Card
             </Button>
           </NavbarBrand>
